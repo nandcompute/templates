@@ -46,6 +46,9 @@ IP_VERSION     := 1.0
 #   design.<name>.part      FPGA part (required)
 #   design.<name>.board     Board part, e.g. digilentinc.com:arty-z7-20:part0:1.1
 #   design.<name>.ips       IPs from IP_DIR the design uses
+#   design.<name>.ip_repos  Extra IP repositories for third-party IP
+#                           (space-separated, no spaces in paths), e.g.
+#                           $(PROJ_DIR)/vendor/<vendor>/<dist>
 #   design.<name>.top       Top module (default: system_top)
 #   design.<name>.generics  Top-level generics, e.g. CHANNELS=4 DEBUG=0
 #
