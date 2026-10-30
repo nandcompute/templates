@@ -11,12 +11,16 @@
 # Vivado working files
 .Xil/
 *.jou
+vivado*.log
 vivado*.str
-vivado_pid*.str
-webtalk*
+*webtalk*
 
 # Simulator output
 xsim.dir/
+xsim*.log
+xvhdl*.log
+xvlog*.log
+xelab*.log
 *.wdb
 *.pb
 

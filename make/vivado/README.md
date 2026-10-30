@@ -38,6 +38,7 @@ A value given on the make command line overrides both files, for example `make i
 │       ├── system_top.vhd     #   top level (design.<name>.top to change)
 │       ├── *.xdc              #   constraints
 │       ├── system_bd.tcl      #   optional block design
+│       ├── ips.tcl            #   optional third-party IP (create_ip)
 │       └── msg.tcl            #   optional message severity changes
 ├── build/                     # BUILD_DIR: everything generated
 └── make/                      # This template
@@ -112,11 +113,27 @@ design.acme_arty.ips      := clock_forwarder mux_synchronizer
 design.acme_arty.generics := CHANNELS=4
 ```
 
-`make bit-acme_arty` packages the IPs listed, creates the project, builds the block design from `system_bd.tcl` if there is one, then runs synthesis and implementation. The output in `build/designs/acme_arty/` is `acme_arty.bit`, `acme_arty.xsa` (with the bitstream, for Vitis), `timing.rpt` and `utilization.rpt`.
+`make bit-acme_arty` packages the IPs listed, creates the project, creates the third-party IP from `ips.tcl` and builds the block design from `system_bd.tcl` if the design has them, then runs synthesis and implementation. The output in `build/designs/acme_arty/` is `acme_arty.bit`, `acme_arty.xsa` (with the bitstream, for Vitis), `timing.rpt` and `utilization.rpt`.
 
 The build fails, with a clear message, if a run fails or timing isn't met. When timing fails, the bitstream and XSA are still written, but as `acme_arty_bad_timing.*`, so they can't be mistaken for a good build. Registers with no clock, which don't show up as timing failures, produce a warning and `no_clock.rpt`.
 
 `make gui-acme_arty` opens the built project in the Vivado GUI, for looking at timing, the floorplan or the block design. Changes made there aren't kept: the next `make bit-acme_arty` recreates the project from the sources.
+
+### Third-party IP
+
+IP from outside `library/`, such as a vendor's IP repository, is listed per design and created in the design's `ips.tcl`:
+
+```make
+design.acme_arty.ip_repos := $(PROJ_DIR)/vendor/acme/acme-ip-v1.0
+```
+
+```tcl
+# designs/acme_arty/ips.tcl
+create_ip -vlnv acme.com:ip:widget:1.0 -module_name widget_0
+set_property -dict [list CONFIG.WIDTH {32}] [get_ips widget_0]
+```
+
+The repositories are added after the project's own packaged IPs. `ips.tcl` runs before the block design, and its IP is generated before synthesis, so configuration errors stop the build early. Instantiate the generated module in the top level by its `-module_name`. Commit the vendor's distribution unchanged, in a versioned folder, so an upgrade only changes the path.
 
 ## Loading onto hardware
 

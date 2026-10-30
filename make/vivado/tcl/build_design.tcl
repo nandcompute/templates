@@ -10,6 +10,10 @@
 # with a flash part. If timing fails, the bitstream and XSA are named
 # <name>_bad_timing.*, no flash image is written, and the build stops
 # with an error.
+#
+# Optional files in the design folder: msg.tcl (message severities),
+# ips.tcl (third-party IP: create_ip and its settings), system_bd.tcl
+# (block design).
 # ===================================================================
 
 set tcl_dir [file dirname [file normalize [info script]]]
@@ -44,7 +48,11 @@ if {$board ne ""} {
     set_property board_part $board [current_project]
 }
 
-set_property ip_repo_paths [list [tpl::require_env TPL_IP_REPO]] [current_project]
+# The project's own packaged IPs, plus third-party IP repositories
+# (design.<name>.ip_repos in project.mk)
+set ip_repos [list [tpl::require_env TPL_IP_REPO]]
+lappend ip_repos {*}[tpl::env TPL_EXTRA_IP_REPOS]
+set_property ip_repo_paths $ip_repos [current_project]
 update_ip_catalog -rebuild
 
 if {[tpl::env TPL_IP_CACHE] ne ""} {
@@ -58,6 +66,19 @@ tpl::source_if_exists [file join $src_dir msg.tcl]
 
 tpl::add_hdl [tpl::env TPL_DESIGN_SOURCES]
 tpl::add_xdc [tpl::env TPL_DESIGN_XDC]
+
+# -------------------------------------------------------------------
+# Third-party IP, if the design has any: ips.tcl creates and
+# configures it (create_ip, set_property CONFIG.*), and the IP is
+# generated here so configuration errors stop the build early.
+# -------------------------------------------------------------------
+set ips_tcl [file join $src_dir ips.tcl]
+if {[file exists $ips_tcl]} {
+    uplevel #0 [list source $ips_tcl]
+    if {[llength [get_ips -quiet]] > 0} {
+        generate_target all [get_ips]
+    }
+}
 
 # -------------------------------------------------------------------
 # Block design, if the design has one

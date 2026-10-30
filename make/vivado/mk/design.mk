@@ -4,7 +4,8 @@
 #
 # A design is a folder in DESIGN_DIR, listed in DESIGNS in project.mk.
 # It holds the top-level HDL, constraints (*.xdc), and optionally
-# system_bd.tcl (block design) and msg.tcl (message severities).
+# system_bd.tcl (block design), ips.tcl (third-party IP, run before
+# synthesis) and msg.tcl (message severities).
 # Output goes to $(BUILD_DIR)/designs/<name>/: <name>.bit, <name>.xsa,
 # timing and utilization reports, <name>.ltx when the design has debug
 # cores (ILA, VIO), and <name>.mcs when it has a flash part.
@@ -38,7 +39,7 @@ HW_TARGET ?=
 
 _design_hdl     = $(sort $(wildcard $(addprefix $(DESIGN_DIR)/$(1)/*.,vhd vhdl v sv)))
 _design_xdc     = $(sort $(wildcard $(DESIGN_DIR)/$(1)/*.xdc))
-_design_tcl     = $(wildcard $(DESIGN_DIR)/$(1)/system_bd.tcl $(DESIGN_DIR)/$(1)/msg.tcl)
+_design_tcl     = $(wildcard $(addprefix $(DESIGN_DIR)/$(1)/,system_bd.tcl ips.tcl msg.tcl))
 _design_ips     = $(foreach ip,$(design.$(1).ips),$(call ip_component,$(ip)))
 _design_xsa     = $(DESIGN_BUILD_DIR)/$(1)/$(1).xsa
 
@@ -101,6 +102,7 @@ $(call _design_xsa,$(1)): $(call _design_hdl,$(1)) $(call _design_xdc,$(1)) $(ca
 		TPL_FLASH_SIZE="$(design.$(1).flash_size)" \
 		TPL_FLASH_INTERFACE="$(or $(design.$(1).flash_interface),SPIx4)" \
 		TPL_IP_REPO="$(IP_BUILD_DIR)" \
+		TPL_EXTRA_IP_REPOS="$(strip $(design.$(1).ip_repos))" \
 		TPL_IP_CACHE="$$(IP_CACHE)" \
 		TPL_JOBS="$$(JOBS)" \
 		vivado -mode batch -nojournal -nolog -notrace \
