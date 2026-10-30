@@ -1,0 +1,18 @@
+# Nand Compute Templates: formatting for every file in this repository
+root = true                       # stop here; ignore any .editorconfig in parent folders
+
+[*]                               # every file
+charset = utf-8
+end_of_line = lf                  # matches * text=auto in .gitattributes
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+insert_final_newline = false      # your convention: no newline at end of file
+
+# Make recipes must be indented with tabs.
+[{Makefile,*.mk}]
+indent_style = tab                # a space-indented recipe is a Make error
+
+# Two trailing spaces are a line break in Markdown.
+[*.md]
+trim_trailing_whitespace = false

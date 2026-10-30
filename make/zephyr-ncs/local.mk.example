@@ -1,0 +1,14 @@
+# ===================================================================
+# local.mk: settings for this machine only
+# Nand Compute Templates — make/zephyr-ncs/local.mk.example
+#
+# Copy to local.mk next to the Makefile and edit. local.mk is ignored
+# by Git (gitignore/c.gitignore): it's different on every machine.
+# ===================================================================
+
+# Folder holding one subfolder per NCS version, e.g. v3.4.1/
+NCS_INSTALL_DIR := $(HOME)/ncs
+
+# Probe and serial port, when the defaults don't fit this machine
+# SNR         := 1050123456
+# SERIAL_PORT := /dev/ttyACM1

@@ -1,0 +1,9 @@
+# ===================================================================
+# Generated documentation (make/common/doxygen.mk, graphviz.mk)
+# Nand Compute Templates — gitignore/doxygen.gitignore
+#
+# Append to the project's .gitignore when it uses doxygen.mk or
+# graphviz.mk. Both write to build-docs/ unless DOC_OUTPUT_DIR or
+# DIAGRAM_OUT is changed; add the output folders here if it is.
+# ===================================================================
+/build-docs/

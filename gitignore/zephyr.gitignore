@@ -1,0 +1,24 @@
+# ===================================================================
+# Zephyr / NCS additions
+# Nand Compute Templates — gitignore/zephyr.gitignore
+#
+# Append to gitignore/c.gitignore when building the
+# project's .gitignore. The C template's build directories are
+# anchored to the repo root, so they don't cover per-app builds.
+# ===================================================================
+
+# Per-app build directories (apps/<app>/build-<variant>-<board>/)
+build-debug*/
+build-release*/
+/apps/*/build/
+
+# Twister output, incl. renamed earlier runs (twister-out.1, ...)
+twister-out/
+twister-out.*/
+
+# Generated NCS environment script
+ncs_env_*.sh
+
+# Signing keys are already covered by *.pem; keys/ is listed so a key
+# in another format can't slip in.
+/keys/

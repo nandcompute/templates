@@ -1,0 +1,62 @@
+# ===================================================================
+# Firmware project .gitattributes
+# Nand Compute Templates — gitattributes/firmware.gitattributes
+#
+# Copy to the repository root as .gitattributes. Check a path with:
+#   git check-attr -a <path>
+#
+# @note The LFS patterns below need Git LFS on every clone, including
+# the client's machines and CI. See README.md before using them.
+# ===================================================================
+
+# ---------- Line endings ----------
+# Normalize text files to LF in the repository.
+* text=auto
+
+# Windows batch scripts need CRLF.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Must stay LF even on Windows checkouts with core.autocrlf=true:
+# CRLF breaks bash recipes in Makefiles and #! lines in scripts.
+*.sh     text eol=lf
+*.py     text eol=lf
+Makefile text eol=lf
+*.mk     text eol=lf
+
+# ---------- Binaries (never converted) ----------
+# Committed images, e.g. a prebuilt bootloader. *.hex and *.srec are
+# text and are left to text=auto.
+*.bin binary
+
+# ---------- Git LFS: documentation ----------
+*.pdf filter=lfs diff=lfs merge=lfs -text
+
+# ---------- Git LFS: images ----------
+*.png  filter=lfs diff=lfs merge=lfs -text
+*.jpg  filter=lfs diff=lfs merge=lfs -text
+*.jpeg filter=lfs diff=lfs merge=lfs -text
+
+# ---------- Git LFS: archives (vendor SDKs, tools) ----------
+*.zip     filter=lfs diff=lfs merge=lfs -text
+*.7z      filter=lfs diff=lfs merge=lfs -text
+*.tar.gz  filter=lfs diff=lfs merge=lfs -text
+*.tgz     filter=lfs diff=lfs merge=lfs -text
+*.tar.xz  filter=lfs diff=lfs merge=lfs -text
+*.tar.bz2 filter=lfs diff=lfs merge=lfs -text
+
+# ---------- Git LFS: programmable logic ----------
+# AMD/Xilinx: bitstream, hardware handoff, design checkpoint, flash image
+*.bit filter=lfs diff=lfs merge=lfs -text
+*.xsa filter=lfs diff=lfs merge=lfs -text
+*.dcp filter=lfs diff=lfs merge=lfs -text
+*.mcs filter=lfs diff=lfs merge=lfs -text
+# Intel/Altera: SRAM, POF and JTAG indirect configuration files
+*.sof filter=lfs diff=lfs merge=lfs -text
+*.pof filter=lfs diff=lfs merge=lfs -text
+*.jic filter=lfs diff=lfs merge=lfs -text
+
+# ---------- Git LFS: test data ----------
+# Uncomment and adjust for the capture tools your project uses.
+# *.sal filter=lfs diff=lfs merge=lfs -text
+# test-data/** filter=lfs diff=lfs merge=lfs -text

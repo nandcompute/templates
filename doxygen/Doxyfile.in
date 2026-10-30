@@ -1,0 +1,86 @@
+# ===================================================================
+# Doxyfile template
+# Nand Compute Templates — doxygen/
+#
+# Lists only settings that differ from Doxygen's defaults; everything
+# else uses the default for the installed version. To see the full
+# list with descriptions: doxygen -g full.Doxyfile
+#
+# @VAR@ values are filled in by CMakeLists.txt. Edit the settings
+# below per project only when there's a reason, and say why.
+# ===================================================================
+
+# -------------------------------------------------------------------
+# Project
+# -------------------------------------------------------------------
+PROJECT_NAME           = "@DOC_PROJECT_NAME@"
+PROJECT_NUMBER         = "@DOCVER@"
+PROJECT_BRIEF          = "@DOC_PROJECT_BRIEF@"
+OUTPUT_DIRECTORY       = "@DOC_OUTPUT_DIR@"
+STRIP_FROM_PATH        = "@DOC_PROJECT_ROOT@"
+
+# -------------------------------------------------------------------
+# Input
+# -------------------------------------------------------------------
+INPUT                  = @DOC_INPUT_QUOTED@
+FILE_PATTERNS          = *.c *.h *.cc *.cpp *.hpp *.md *.dox
+RECURSIVE              = YES
+# Build and test output. Kept narrow, so source folders such as
+# src/builder/ aren't excluded by accident.
+EXCLUDE_PATTERNS       = */build/* \
+                         */build-*/* \
+                         */Build/* \
+                         */Build-*/* \
+                         */debug/* \
+                         */debug-*/* \
+                         */Debug/* \
+                         */Debug-*/* \
+                         */release/* \
+                         */release-*/* \
+                         */Release/* \
+                         */Release-*/* \
+                         */twister-out*/* \
+                         */.git/*
+
+# -------------------------------------------------------------------
+# Parsing and content
+# -------------------------------------------------------------------
+OPTIMIZE_OUTPUT_FOR_C  = YES
+JAVADOC_AUTOBRIEF      = YES
+# Same results on every OS (the default depends on the file system).
+CASE_SENSE_NAMES       = YES
+# EXTRACT_ALL = YES also turns off "is not documented" warnings.
+EXTRACT_ALL            = @DOC_EXTRACT_ALL_YN@
+ABBREVIATE_BRIEF       =
+SOURCE_BROWSER         = YES
+
+# -------------------------------------------------------------------
+# Warnings
+# Printed to the console, so they're seen during builds.
+# -------------------------------------------------------------------
+QUIET                  = YES
+WARN_NO_PARAMDOC       = YES
+WARN_AS_ERROR          = @DOC_WARN_AS_ERROR_VALUE@
+
+# -------------------------------------------------------------------
+# Output formats
+# -------------------------------------------------------------------
+GENERATE_HTML          = @DOC_GENERATE_HTML@
+GENERATE_LATEX         = @DOC_GENERATE_LATEX@
+GENERATE_RTF           = @DOC_GENERATE_RTF@
+GENERATE_MAN           = @DOC_GENERATE_MAN@
+# Never stop to prompt on a LaTeX error during an automated build.
+LATEX_BATCHMODE        = YES
+PAPER_TYPE             = a4
+
+# -------------------------------------------------------------------
+# Graphs (Graphviz)
+# -------------------------------------------------------------------
+HAVE_DOT               = @HAVE_DOT@
+DOT_PATH               = "@DOC_DOT_PATH@"
+CALL_GRAPH             = YES
+CALLER_GRAPH           = YES
+UML_LOOK               = YES
+UML_LIMIT_NUM_FIELDS   = 50
+DOT_GRAPH_MAX_NODES    = 100
+DOT_MULTI_TARGETS      = YES

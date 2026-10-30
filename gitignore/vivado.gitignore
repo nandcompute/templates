@@ -1,0 +1,29 @@
+# ===================================================================
+# AMD Vivado additions
+# Nand Compute Templates — gitignore/vivado.gitignore
+#
+# Append to gitignore/c.gitignore when building the project's
+# .gitignore. make/vivado/ builds everything under build/, which
+# c.gitignore already ignores; these cover files Vivado leaves behind
+# when it's run by hand.
+# ===================================================================
+
+# Vivado working files
+.Xil/
+*.jou
+vivado*.str
+vivado_pid*.str
+webtalk*
+
+# Simulator output
+xsim.dir/
+*.wdb
+*.pb
+
+# Projects opened or created in the GUI outside build/
+*.cache/
+*.hw/
+*.ip_user_files/
+*.runs/
+*.sim/
+*.gen/

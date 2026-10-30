@@ -1,0 +1,23 @@
+# ===================================================================
+# local.mk: settings for this machine only
+# Nand Compute Templates — make/vivado/local.mk.example
+#
+# Copy to local.mk next to the Makefile and edit. local.mk is ignored
+# by Git (gitignore/c.gitignore): it's different on every machine.
+# ===================================================================
+
+# Folder holding one subfolder per Vivado version, e.g. 2025.2/
+XILINX_ROOT := /tools/Xilinx
+
+# Or the full path to settings64.sh, for any other layout:
+# VIVADO_SETTINGS := /opt/Xilinx/Vivado/2024.2/settings64.sh
+
+# Parallel jobs for synthesis and implementation (default: all CPUs)
+# JOBS := 8
+
+# Board attached to another machine running hw_server (default:
+# this machine, localhost:3121)
+# HW_SERVER := labpc:3121
+
+# With several JTAG cables connected: part of one cable's serial number
+# HW_TARGET := 210251A08870
