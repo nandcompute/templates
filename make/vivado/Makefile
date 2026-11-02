@@ -76,6 +76,7 @@ XILINX_ROOT     ?= /tools/Xilinx
 VIVADO_SETTINGS ?= $(XILINX_ROOT)/$(VIVADO_VERSION)/Vivado/settings64.sh
 VERSION_CHECK   ?= error
 VHDL_2008       ?= 1
+IP_VHDL_2008    ?= $(VHDL_2008)
 JOBS            ?= $(shell nproc 2>/dev/null || echo 4)
 VERBOSE         ?= 0
 

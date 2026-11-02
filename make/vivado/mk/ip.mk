@@ -55,6 +55,7 @@ $(call ip_component,$(1)): $(call ip_sources,$(1)) $(call ip_xdc,$(1)) $(IP_DIR)
 		TPL_IP_VERSION="$(or $(ip.$(1).version),$(IP_VERSION))" \
 		TPL_IP_URL="$(IP_URL)" \
 		TPL_IP_PART="$(IP_PART)" \
+		TPL_VHDL_2008="$(or $(ip.$(1).vhdl_2008),$(IP_VHDL_2008))" \
 		vivado -mode batch -nojournal -nolog -notrace \
 		-source "$(TCL_DIR)/package_ip.tcl")
 
