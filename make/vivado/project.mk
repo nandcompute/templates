@@ -45,7 +45,11 @@ IP_VERSION     := 1.0
 #
 #   design.<name>.part      FPGA part (required)
 #   design.<name>.board     Board part, e.g. digilentinc.com:arty-z7-20:part0:1.1
-#   design.<name>.ips       IPs from IP_DIR the design uses
+#   design.<name>.libs      IPs from IP_DIR whose HDL is compiled into
+#                           the design, for RTL top levels: instantiate
+#                           them as entity work.<ip>
+#   design.<name>.ips       IPs from IP_DIR used as packaged IP, in a
+#                           block design (system_bd.tcl) or ips.tcl
 #   design.<name>.ip_repos  Extra IP repositories for third-party IP
 #                           (space-separated, no spaces in paths), e.g.
 #                           $(PROJ_DIR)/vendor/<vendor>/<dist>

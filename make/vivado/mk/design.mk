@@ -5,7 +5,9 @@
 # A design is a folder in DESIGN_DIR, listed in DESIGNS in project.mk.
 # It holds the top-level HDL, constraints (*.xdc), and optionally
 # system_bd.tcl (block design), ips.tcl (third-party IP, run before
-# synthesis) and msg.tcl (message severities).
+# synthesis) and msg.tcl (message severities). The HDL of the IPs in
+# design.<name>.libs is compiled in with it, so the top level can
+# instantiate them directly (entity work.<ip>).
 # Output goes to $(BUILD_DIR)/designs/<name>/: <name>.bit, <name>.xsa,
 # timing and utilization reports, <name>.ltx when the design has debug
 # cores (ILA, VIO), and <name>.mcs when it has a flash part.
@@ -41,6 +43,8 @@ _design_hdl     = $(sort $(wildcard $(addprefix $(DESIGN_DIR)/$(1)/*.,vhd vhdl v
 _design_xdc     = $(sort $(wildcard $(DESIGN_DIR)/$(1)/*.xdc))
 _design_tcl     = $(wildcard $(addprefix $(DESIGN_DIR)/$(1)/,system_bd.tcl ips.tcl msg.tcl))
 _design_ips     = $(foreach ip,$(design.$(1).ips),$(call ip_component,$(ip)))
+# HDL of the IPs in design.<name>.libs, each after its dependencies.
+_design_libs    = $(call uniq,$(foreach ip,$(design.$(1).libs),$(call ip_sources,$(ip))))
 _design_xsa     = $(DESIGN_BUILD_DIR)/$(1)/$(1).xsa
 
 # $(call _design_require,<file>,<design>): stop with a hint if <file>
@@ -77,6 +81,7 @@ ifeq ($$(wildcard $(DESIGN_DIR)/$(1)),)
 $$(error Design folder $(DESIGN_DIR)/$(1) does not exist)
 endif
 $$(foreach ip,$$(design.$(1).ips),$$(if $$(filter $$(ip),$$(IPS)),,$$(error design.$(1).ips: no IP "$$(ip)" in $$(IP_DIR))))
+$$(foreach ip,$$(design.$(1).libs),$$(if $$(filter $$(ip),$$(IPS)),,$$(error design.$(1).libs: no IP "$$(ip)" in $$(IP_DIR))))
 ifneq ($$(strip $$(design.$(1).flash)),)
 ifeq ($$(strip $$(design.$(1).flash_size)),)
 $$(error design.$(1).flash_size (in MB) is not set in project.mk)
@@ -84,7 +89,7 @@ endif
 endif
 
 $(call _design_xsa,$(1)): $(call _design_hdl,$(1)) $(call _design_xdc,$(1)) $(call _design_tcl,$(1)) \
-		$(call _design_ips,$(1)) \
+		$(call _design_ips,$(1)) $(call _design_libs,$(1)) \
 		$(TCL_DIR)/common.tcl $(TCL_DIR)/build_design.tcl $(MK_DIR)/project.mk | vivado-check
 	$$(call run_logged,Building design $(1),$(DESIGN_WORK_DIR)/$(1)/build.log,\
 		cd "$(DESIGN_WORK_DIR)/$(1)" && $(VIVADO_SHELL) $(VIVADO_ENV) \
@@ -96,7 +101,7 @@ $(call _design_xsa,$(1)): $(call _design_hdl,$(1)) $(call _design_xdc,$(1)) $(ca
 		TPL_DESIGN_BOARD="$(design.$(1).board)" \
 		TPL_DESIGN_TOP="$(or $(design.$(1).top),system_top)" \
 		TPL_DESIGN_GENERICS="$(strip $(design.$(1).generics))" \
-		TPL_DESIGN_SOURCES="$(call _design_hdl,$(1))" \
+		TPL_DESIGN_SOURCES="$(strip $(call _design_libs,$(1)) $(call _design_hdl,$(1)))" \
 		TPL_DESIGN_XDC="$(call _design_xdc,$(1))" \
 		TPL_FLASH_PART="$(design.$(1).flash)" \
 		TPL_FLASH_SIZE="$(design.$(1).flash_size)" \
