@@ -118,7 +118,7 @@ A design uses IP from `library/` in one of two ways:
 - **`.libs`: compiled into the design.** For an RTL top level. The IP's HDL, after that of the IPs it depends on, is added to the design's sources, and the top level instantiates it like any other entity: `u_clk : entity work.clk_gen`. Its generics are set in the top level, and the IP keeps its own testbench (`make sim-<ip>`). Its `*.xdc` files are not added: constraints for the design go in the design's folder.
 - **`.ips`: packaged IP.** For a block design (`system_bd.tcl`) or `create_ip` in `ips.tcl`, with the VLNV `<IP_VENDOR>:<IP_LIBRARY>:<ip>:<version>`. The IP is packaged first and used from the IP catalog.
 
-`make bit-acme_arty` packages the IPs listed, creates the project, creates the third-party IP from `ips.tcl` and builds the block design from `system_bd.tcl` if the design has them, then runs synthesis and implementation. The output in `build/designs/acme_arty/` is `acme_arty.bit`, `acme_arty.xsa` (with the bitstream, for Vitis), `timing.rpt` and `utilization.rpt`.
+`make bit-acme_arty` packages the IPs in `.ips`, creates the project, creates the third-party IP from `ips.tcl` and builds the block design from `system_bd.tcl` if the design has them, then runs synthesis and implementation. The output in `build/designs/acme_arty/` is `acme_arty.bit`, `acme_arty.xsa` (with the bitstream, for Vitis), `timing.rpt` and `utilization.rpt`.
 
 The build fails, with a clear message, if a run fails or timing isn't met. When timing fails, the bitstream and XSA are still written, but as `acme_arty_bad_timing.*`, so they can't be mistaken for a good build. Registers with no clock, which don't show up as timing failures, produce a warning and `no_clock.rpt`.
 
