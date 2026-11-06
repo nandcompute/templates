@@ -11,7 +11,7 @@
 # ===================================================================
 
 ##
-## Documentation (DOC_GEN_PDF=ON for a PDF, DOC_WARN_AS_ERROR=ON for CI):
+## Documentation (DOC_WARN_AS_ERROR=ON for CI):
 ##   docs                Generate Doxygen documentation
 ##   clean-docs          Remove generated documentation
 
@@ -30,7 +30,7 @@ DOC_OUTPUT_DIR    ?= $(DOC_BUILD)
 DOCVER            ?= $(shell git -C "$(PROJ_DIR)" describe --tags --always --dirty 2>/dev/null || echo unknown)
 
 DOC_GEN_HTML      ?= ON
-DOC_GEN_PDF       ?= OFF
+DOC_GEN_PDF       ?= ON
 DOC_GEN_RTF       ?= OFF
 DOC_GEN_MAN       ?= OFF
 DOC_EXTRACT_ALL   ?= ON
