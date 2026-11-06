@@ -30,15 +30,20 @@ endef
 .PHONY: cbor clean-cbor
 CLEAN_ALL += clean-cbor
 
+# zcbor is run from PROJ_DIR with relative output paths: given absolute
+# ones, it creates a stray copy of the output folder under the working
+# directory.
+_CBOR_REL = $(patsubst $(PROJ_DIR)/%,%,$(1))
+
 cbor: ncs-check
 	@$(require_cbor_settings)
 	@if [ -z "$(CDDL_FILES)" ]; then echo "Error: no .cddl files found in $(CBOR_CDDL_DIR)"; exit 1; fi
 	@mkdir -p "$(CBOR_INC_DIR)" "$(CBOR_SRC_DIR)"
-	@$(NCS_SHELL) zcbor code --decode --encode \
-		$(foreach c,$(CDDL_FILES),-c "$(c)") \
+	@cd "$(PROJ_DIR)" && $(NCS_SHELL) zcbor code --decode --encode \
+		$(foreach c,$(CDDL_FILES),-c "$(call _CBOR_REL,$(c))") \
 		-t $(CBOR_ENTRY_TYPES) \
-		--oc "$(CBOR_SRC_DIR)/$(CBOR_OUT_BASE).c" \
-		--oh "$(CBOR_INC_DIR)/$(CBOR_OUT_BASE).h" \
+		--oc "$(call _CBOR_REL,$(CBOR_SRC_DIR))/$(CBOR_OUT_BASE).c" \
+		--oh "$(call _CBOR_REL,$(CBOR_INC_DIR))/$(CBOR_OUT_BASE).h" \
 		--short-names
 
 # Removes only files named after CBOR_OUT_BASE (zcbor adds _encode,
