@@ -30,8 +30,10 @@ TWISTER_COMMON = \
 	-O "$(TWISTER_OUT)" \
 	$(TWISTER_ARGS)
 
+TWISTER_BOARD_ROOT_ARG = --board-root "$(TWISTER_BOARD_ROOT)"
+
 TWISTER_BOARD = \
-	--board-root "$(TWISTER_BOARD_ROOT)" \
+	$(TWISTER_BOARD_ROOT_ARG) \
 	-p $(BOARD_TARGET) \
 	--extra-args="BOARD_ROOT=$(BOARD_ROOT)"
 
@@ -81,7 +83,7 @@ test-hw-rtt: ncs-check
 		--extra-args="EXTRA_CONF_FILE=$(RTT_CONF)"
 
 test-sim: ncs-check
-	@$(NCS_SHELL) "$(TWISTER)" $(TWISTER_COMMON) -p native_sim
+	@$(NCS_SHELL) "$(TWISTER)" $(TWISTER_COMMON) $(TWISTER_BOARD_ROOT_ARG) -p native_sim
 
 # Twister renames earlier runs to twister-out.1, .2, ...
 clean-tests:
