@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Nand Compute LLC
+# SPDX-License-Identifier: MIT-0
+
 # ===================================================================
 # build_design.tcl: build one design into a bitstream and an XSA
 # Nand Compute Templates — make/vivado/tcl/

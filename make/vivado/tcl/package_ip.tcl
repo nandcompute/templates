@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Nand Compute LLC
+# SPDX-License-Identifier: MIT-0
+
 # ===================================================================
 # package_ip.tcl: package one IP for the Vivado IP catalog
 # Nand Compute Templates — make/vivado/tcl/

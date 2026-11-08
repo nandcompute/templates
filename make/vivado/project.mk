@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Nand Compute LLC
+# SPDX-License-Identifier: MIT-0
+
 # ===================================================================
 # project.mk: per-project settings for the Vivado Makefile
 # Nand Compute Templates — make/vivado/
@@ -29,13 +32,21 @@ IP_VERSION     := 1.0
 
 # -------------------------------------------------------------------
 # IPs are found automatically: every folder in IP_DIR with an ip.tcl.
-# Per-IP settings, all optional:
+# A folder with HDL but no ip.tcl is a library (shared packages): it
+# can be a dependency and has a testbench, but is never packaged.
+# Per-IP (and per-library) settings, all optional:
 #
 #   ip.<name>.deps     Other IPs whose sources this one includes
 #   ip.<name>.sources  HDL files in compile order (default: all *.vhd,
 #                      *.vhdl, *.v, *.sv in the folder, *_pkg first)
 #   ip.<name>.version  Overrides IP_VERSION
 #   ip.<name>.tb_top   Testbench top (default: <name>_tb)
+#   ip.<name>.tb_sources  Testbench-only HDL outside tb/ (e.g. a
+#                      vendor simulation model), relative to the IP
+#                      folder, in compile order; compiled before tb/
+#   ip.<name>.tb_incdirs  Verilog `include folders for the testbench,
+#                      relative to the IP folder
+#   ip.<name>.vhdl_2008   1 or 0: overrides IP_VHDL_2008 for packaging
 # -------------------------------------------------------------------
 # ip.mux_synchronizer.deps := flip_flop_synchronizer
 

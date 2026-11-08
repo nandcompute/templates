@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Nand Compute LLC
+# SPDX-License-Identifier: MIT-0
+
 # ===================================================================
 # common.tcl: shared helpers for the Vivado template scripts
 # Nand Compute Templates — make/vivado/tcl/

@@ -28,11 +28,14 @@ A value given on the make command line overrides both files, for example `make i
 ```
 <project>/
 ├── library/                   # IP_DIR: one folder per IP
-│   └── <ip>/
-│       ├── <ip>.vhd           #   HDL; the top entity/module is named <ip>
-│       ├── *.xdc              #   optional IP constraints
-│       ├── ip.tcl             #   interfaces and GUI (marks the folder as an IP)
-│       └── tb/<ip>_tb.vhd     #   optional testbench
+│   ├── <ip>/
+│   │   ├── <ip>.vhd           #   HDL; the top entity/module is named <ip>
+│   │   ├── *.xdc              #   optional IP constraints
+│   │   ├── ip.tcl             #   interfaces and GUI (marks the folder as an IP)
+│   │   └── tb/<ip>_tb.vhd     #   optional testbench
+│   └── <lib>/                 #   a library: HDL but no ip.tcl
+│       ├── <lib>_pkg.vhd      #   shared packages
+│       └── tb/<lib>_tb.vhd    #   optional testbench
 ├── designs/                   # DESIGN_DIR: one folder per design
 │   └── <design>/
 │       ├── system_top.vhd     #   top level (design.<name>.top to change)
@@ -92,9 +95,26 @@ ip.mux_synchronizer.deps := flip_flop_synchronizer
 
 Its sources are then included, before the IP's own, both when packaging and in simulation, and `make ip-mux_synchronizer` packages `flip_flop_synchronizer` first.
 
+### Libraries
+
+A folder in `library/` with HDL but no `ip.tcl` is a library: shared code with no top entity of its own, such as VHDL packages. A library is never packaged, but it can be listed in `ip.<name>.deps` and `design.<name>.libs` like an IP, and its testbench runs with `make sim-<lib>` and `sim-all`:
+
+```make
+ip.uart.deps         := common
+ip.common.tb_top     := util_pkg_tb
+```
+
+Files named `*_pkg.vhd` compile before the rest of the folder. `make help` lists the libraries found. A misspelled name in `.deps` or `.libs` stops with an error naming it.
+
 ## Simulation
 
-`make sim-<ip>` compiles the IP's sources (including its dependencies) and everything in `<ip>/tb/`, elaborates `<ip>_tb`, and runs it in xsim. A testbench:
+`make sim-<ip>` compiles the IP's sources (including its dependencies) and everything in `<ip>/tb/`, elaborates `<ip>_tb`, and runs it in xsim. Per-IP settings in `project.mk` change that:
+
+- `ip.<name>.tb_top`: the testbench top, when it isn't `<ip>_tb`.
+- `ip.<name>.tb_sources`: testbench-only HDL outside `tb/`, such as a vendor simulation model, relative to the IP folder and in compile order. It compiles before `tb/`; listing a file from `tb/` here moves it first.
+- `ip.<name>.tb_incdirs`: Verilog `` `include `` folders for the testbench, relative to the IP folder.
+
+A testbench:
 
 - **Reports failures** with `severity error` or `severity failure` (VHDL) or `$error` / `$fatal` (SystemVerilog). Any `Error:`, `Failure:` or `FATAL_ERROR:` in the simulator output fails the target.
 - **Ends the simulation itself**, with `std.env.finish` (VHDL-2008), `$finish`, or by stopping every clock. Otherwise xsim runs forever.

@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Nand Compute LLC
+# SPDX-License-Identifier: MIT-0
+
 # ===================================================================
 # ip.mk: package each IP in IP_DIR for the Vivado IP catalog
 # Nand Compute Templates — make/vivado/mk/
@@ -15,6 +18,11 @@
 ##   clean-ips           Remove every packaged IP
 
 IPS := $(sort $(notdir $(patsubst %/ip.tcl,%,$(wildcard $(IP_DIR)/*/ip.tcl))))
+
+# Libraries: folders in IP_DIR with HDL but no ip.tcl, e.g. shared VHDL
+# packages. They work in ip.<name>.deps and design.<name>.libs and have
+# testbenches like an IP, but are never packaged.
+LIBS := $(sort $(filter-out $(IPS),$(notdir $(patsubst %/,%,$(dir $(wildcard $(addprefix $(IP_DIR)/*/*.,vhd vhdl v sv)))))))
 
 IP_BUILD_DIR = $(BUILD_DIR)/ip
 IP_WORK_DIR  = $(BUILD_DIR)/work/ip
@@ -37,8 +45,10 @@ ip_component   = $(IP_BUILD_DIR)/$(1)/component.xml
 # $(call ip_rule,<name>)
 # -------------------------------------------------------------------
 define ip_rule
+$$(foreach d,$$(ip.$(1).deps),$$(if $$(filter $$(d),$$(IPS) $$(LIBS)),,$$(error ip.$(1).deps: no IP or library "$$(d)" in $$(IP_DIR))))
+
 $(call ip_component,$(1)): $(call ip_sources,$(1)) $(call ip_xdc,$(1)) $(IP_DIR)/$(1)/ip.tcl \
-		$(foreach d,$(ip.$(1).deps),$(call ip_component,$(d))) \
+		$(foreach d,$(filter $(IPS),$(ip.$(1).deps)),$(call ip_component,$(d))) \
 		$(TCL_DIR)/common.tcl $(TCL_DIR)/ip_helpers.tcl $(TCL_DIR)/package_ip.tcl $(MK_DIR)/project.mk | vivado-check
 	$$(call run_logged,Packaging IP $(1),$(IP_WORK_DIR)/$(1)/package.log,\
 		cd "$(IP_WORK_DIR)/$(1)" && $(VIVADO_SHELL) $(VIVADO_ENV) \

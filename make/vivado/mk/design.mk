@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Nand Compute LLC
+# SPDX-License-Identifier: MIT-0
+
 # ===================================================================
 # design.mk: build each design into a bitstream and an XSA
 # Nand Compute Templates — make/vivado/mk/
@@ -81,7 +84,7 @@ ifeq ($$(wildcard $(DESIGN_DIR)/$(1)),)
 $$(error Design folder $(DESIGN_DIR)/$(1) does not exist)
 endif
 $$(foreach ip,$$(design.$(1).ips),$$(if $$(filter $$(ip),$$(IPS)),,$$(error design.$(1).ips: no IP "$$(ip)" in $$(IP_DIR))))
-$$(foreach ip,$$(design.$(1).libs),$$(if $$(filter $$(ip),$$(IPS)),,$$(error design.$(1).libs: no IP "$$(ip)" in $$(IP_DIR))))
+$$(foreach ip,$$(design.$(1).libs),$$(if $$(filter $$(ip),$$(IPS) $$(LIBS)),,$$(error design.$(1).libs: no IP or library "$$(ip)" in $$(IP_DIR))))
 ifneq ($$(strip $$(design.$(1).flash)),)
 ifeq ($$(strip $$(design.$(1).flash_size)),)
 $$(error design.$(1).flash_size (in MB) is not set in project.mk)

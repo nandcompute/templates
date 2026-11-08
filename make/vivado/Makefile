@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Nand Compute LLC
+# SPDX-License-Identifier: MIT-0
+
 # ===================================================================
 # AMD Vivado project Makefile
 # Nand Compute Templates — make/vivado/Makefile
@@ -156,6 +159,7 @@ help:
 	@echo ""
 	@echo "Vivado $(VIVADO_VERSION)$(if $(_VIVADO_ON_PATH), (on PATH), (from $(VIVADO_SETTINGS)))"
 	@echo "IPs:     $(if $(IPS),$(IPS),(none found in $(IP_DIR)))"
+	@echo "Libraries: $(if $(LIBS),$(LIBS),(none))"
 	@echo "Designs: $(if $(DESIGNS),$(DESIGNS),(none listed in project.mk))"
 	@sed -n 's/^## \{0,1\}//p' $(filter $(MK_DIR)/mk/%.mk,$(abspath $(MAKEFILE_LIST)))
 	@echo ""

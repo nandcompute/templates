@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Nand Compute LLC
+# SPDX-License-Identifier: MIT-0
+
 # ===================================================================
 # sim.mk: run each IP's testbench in the Vivado simulator (xsim)
 # Nand Compute Templates — make/vivado/mk/
@@ -11,7 +14,7 @@
 
 ##
 ## Simulation (xsim; SIM_GUI=1 opens the waveform viewer):
-##   sim-<ip>            Run an IP's testbench from <ip>/tb/
+##   sim-<ip>            Run an IP's or library's testbench from <ip>/tb/
 ##   sim-all             Run every testbench
 ##   clean-sims          Remove simulation output
 
@@ -19,14 +22,14 @@ SIM_DIR  = $(BUILD_DIR)/sim
 SIM_LIBS ?= unisim unimacro
 SIM_GUI  ?= 0
 
-SIM_IPS := $(foreach ip,$(IPS),$(if $(wildcard $(addprefix $(IP_DIR)/$(ip)/tb/*.,vhd vhdl v sv)),$(ip)))
+SIM_IPS := $(foreach ip,$(sort $(IPS) $(LIBS)),$(if $(wildcard $(addprefix $(IP_DIR)/$(ip)/tb/*.,vhd vhdl v sv)),$(ip)))
 
 # Testbench files: ip.<name>.tb_sources (testbench-only HDL outside
 # tb/, e.g. a vendor simulation model, relative to the IP folder, in
 # compile order), then everything in tb/.
 _sim_tb      = $(addprefix $(IP_DIR)/$(1)/,$(ip.$(1).tb_sources)) \
                $(sort $(wildcard $(addprefix $(IP_DIR)/$(1)/tb/*.,vhd vhdl v sv)))
-_sim_files   = $(call ip_sources,$(1)) $(call _sim_tb,$(1))
+_sim_files   = $(call uniq,$(call ip_sources,$(1)) $(call _sim_tb,$(1)))
 _sim_vhdl    = $(filter %.vhd %.vhdl,$(call _sim_files,$(1)))
 _sim_verilog = $(filter %.v %.sv,$(call _sim_files,$(1)))
 _sim_top     = $(or $(ip.$(1).tb_top),$(1)_tb)
