@@ -47,6 +47,11 @@ IP_VERSION     := 1.0
 #   ip.<name>.tb_incdirs  Verilog `include folders for the testbench,
 #                      relative to the IP folder
 #   ip.<name>.vhdl_2008   1 or 0: overrides IP_VHDL_2008 for packaging
+#
+# All VHDL compiles as VHDL-2008 by default (VHDL_2008 = 1 in the
+# Makefile; IP_VHDL_2008 defaults to it). Packaging a VHDL-2008 top
+# file gives Vivado's [IP_Flow 19-5655] critical warning; it is
+# harmless for IPs that are only compiled into designs (.libs).
 # -------------------------------------------------------------------
 # ip.mux_synchronizer.deps := flip_flop_synchronizer
 

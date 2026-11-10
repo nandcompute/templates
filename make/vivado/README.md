@@ -32,7 +32,8 @@ A value given on the make command line overrides both files, for example `make i
 │   │   ├── <ip>.vhd           #   HDL; the top entity/module is named <ip>
 │   │   ├── *.xdc              #   optional IP constraints
 │   │   ├── ip.tcl             #   interfaces and GUI (marks the folder as an IP)
-│   │   └── tb/<ip>_tb.vhd     #   optional testbench
+│   │   ├── tb/<ip>_tb.vhd     #   optional testbench
+│   │   └── tb/test_<ip>.py    #   optional cocotb tests
 │   └── <lib>/                 #   a library: HDL but no ip.tcl
 │       ├── <lib>_pkg.vhd      #   shared packages
 │       └── tb/<lib>_tb.vhd    #   optional testbench
@@ -59,6 +60,8 @@ Every location can be changed in `project.mk`.
 | `mk/ip.mk` | No | `ip-<ip>`, `ip-all`: package IP into `build/ip/` |
 | `mk/sim.mk` | No | `sim-<ip>`, `sim-all`: testbenches in xsim |
 | `mk/design.mk` | No | `bit-<design>`, `program-<design>`, `flash-<design>`, `gui-<design>` |
+| `mk/doxygen.mk` | No | Optional (`MK_FRAGMENTS`): `docs`, from `make/common/` |
+| `mk/cocotb.mk`, `mk/cocotb_runner.py` | No | Optional (`MK_FRAGMENTS`): `test-<ip>`, `test-all`, from `make/common/` |
 | `tcl/common.tcl` | No | Settings from Make, version check, adding sources |
 | `tcl/ip_helpers.tcl` | No | Helpers for each IP's `ip.tcl` |
 | `tcl/package_ip.tcl` | No | Packages one IP |
@@ -120,6 +123,36 @@ A testbench:
 - **Ends the simulation itself**, with `std.env.finish` (VHDL-2008), `$finish`, or by stopping every clock. Otherwise xsim runs forever.
 
 `SIM_GUI=1` opens the waveform viewer instead of running in batch. UNISIM and UNIMACRO are linked by default, so testbenches can simulate Xilinx primitives; set `SIM_LIBS` to change that.
+
+## cocotb tests
+
+The optional `cocotb` fragment runs Python tests in GHDL (default) or NVC. cocotb doesn't support xsim. To add it, copy `make/common/cocotb.mk` and `make/common/cocotb_runner.py` into `mk/`, and add `cocotb` to `MK_FRAGMENTS`. Each machine needs Python with cocotb 2.x and pytest (`pip install cocotb pytest`), and the simulator on `PATH`.
+
+A unit's tests go in `<ip>/tb/test_<ip>.py`. The cocotb tests and the pytest function that runs them live in the same file, and the pytest function calls `run()` once per set of generics:
+
+```python
+import cocotb
+import pytest
+from cocotb_runner import run
+
+@cocotb.test()
+async def fills_and_drains(dut):    # cocotb tests must not start with "test"
+    ...
+
+@pytest.mark.parametrize("depth", [1, 16, 17])
+def test_my_fifo(depth):
+    run(__file__, parameters={"DEPTH": depth})
+```
+
+`make test-<ip>` compiles the IP's sources, dependencies first as for xsim, and runs every configuration. It prints one line on success, and the first failures plus the log path otherwise. `make test-all` runs every unit with a `tb/test_*.py`. A unit can have both an xsim testbench and cocotb tests.
+
+| Variable | Default | Effect |
+|---|---|---|
+| `COCOTB_SIM` | `ghdl` | Simulator: `ghdl` or `nvc` |
+| `COCOTB_WAVES` | `0` | `1` writes waveforms into each configuration's build folder |
+| `COCOTB_PYTEST_ARGS` | | Extra pytest arguments, e.g. `-k DEPTH16` |
+
+Testbenches that use Xilinx primitives need the UNISIM library compiled for that simulator, so keep those on xsim.
 
 ## Designs
 
@@ -206,5 +239,4 @@ set_property CONFIG_MODE SPIx4 [current_design]
 
 ## Notes
 
-- **Simulators other than xsim.** cocotb doesn't support xsim. To add cocotb tests, use a simulator cocotb supports (GHDL or NVC for VHDL, Verilator or Icarus for Verilog) in a new `mk/cocotb.mk`. Testbenches that use Xilinx primitives then need the UNISIM library compiled for that simulator.
 - **Appending to `project.mk`.** Templates in this repository don't end with a newline. When adding a line with `echo ... >> project.mk`, start it with a newline, or it joins the last comment line and has no effect.
